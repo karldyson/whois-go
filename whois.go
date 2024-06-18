@@ -12,7 +12,7 @@ import (
 
 // define our variables
 var (
-        host = flag.String("host", "", "the whois hostname")
+	host = flag.String("host", "", "the whois hostname")
 	port = flag.String("port", "43", "the port to use")
 	domain = flag.String("domain", "", "the domain name to query")
 )
