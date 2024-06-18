@@ -21,9 +21,9 @@ func main() {
 
 	// define the usage output
 	flag.Usage = func() {
-                fmt.Fprintf(os.Stderr, "Usage: %s --host <host --domain <domain> [--port <port>]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s --host <host --domain <domain> [--port <port>]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n")
-                flag.PrintDefaults()
+		flag.PrintDefaults()
 	}
 
 	// parse the flags
