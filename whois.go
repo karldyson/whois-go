@@ -40,14 +40,14 @@ func main() {
 	dialer := net.Dialer{Timeout: m}
 	conn, err := dialer.Dial("tcp", *host + ":" + *port)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "Connection to %s:%s failed: %s\n", *host, *port, err)
 		return
 	}
 
 	// write to the server
 	_, err = conn.Write([]byte(*domain + "\r\n"))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "Send to %s:%s failed: %s\n", *host, *port, err)
 		return
 	}
 	
@@ -61,7 +61,7 @@ func main() {
 		case io.EOF:
 			return
 		default:
-			fmt.Printf("ERROR: %s\n", err)
+			fmt.Fprintf(os.Stderr, "Receive from %s:%s failed: %s\n", *host, *port, err)
 			return
 		}
 		fmt.Printf("%s", line)
