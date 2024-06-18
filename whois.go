@@ -38,7 +38,7 @@ func main() {
 	// connect to the server
 	m, _ := time.ParseDuration("2s")
 	dialer := net.Dialer{Timeout: m}
-	conn, err := dialer.Dial("tcp", *host + ":" + *port)
+	conn, err := dialer.Dial("tcp", net.JoinHostPort(*host, *port))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Connection to %s:%s failed: %s\n", *host, *port, err)
 		return
