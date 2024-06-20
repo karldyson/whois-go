@@ -13,20 +13,20 @@ import (
 
 // define our variables
 var (
-	host		= flag.String("host", "", "the whois hostname")
-	port		= flag.String("port", "43", "the port to use")
-	domain		= flag.String("domain", "", "the domain name to query")
+	host		= flag.String("host", "whois.iana.org", "the whois server hostname")
+	port		= flag.String("port", "43", "the whois service port to use")
 	debugOutput	= flag.Bool("debug", false, "enable debug output")
 	version		= flag.Bool("version", false, "the code version")
 	revision	= flag.Bool("revision", false, "revision and build information")
 	versionString string = "devel"
+	name string
 )
 
 func main() {
 
 	// define the usage output
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s --host <host --domain <domain> [--port <port>]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s --host <host> [--port <port>] <name>\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n")
 		flag.PrintDefaults()
 	}
@@ -50,10 +50,18 @@ func main() {
 		return
 	}
 
-	// bail if we don't have what we need
-	if *host == "" || *domain == "" {
+	switch len(flag.Args()) {
+	case 0:
+		fmt.Fprintf(os.Stderr, "ERROR: no string supplied\n")
 		flag.Usage()
-		return
+		os.Exit(1)
+	case 1:
+		name = flag.Args()[0]
+	default:
+	// and a default catching something weird
+		fmt.Fprintf(os.Stderr, "ERROR: invalid number of CLI parameters\n")
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	// connect to the server
@@ -66,7 +74,7 @@ func main() {
 	}
 
 	// write to the server
-	_, err = conn.Write([]byte(*domain + "\r\n"))
+	_, err = conn.Write([]byte(name + "\r\n"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Send to %s:%s failed: %s\n", *host, *port, err)
 		return
