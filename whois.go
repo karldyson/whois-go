@@ -8,13 +8,18 @@ import (
 	"bufio"
 	"io"
 	"time"
+	"runtime/debug"
 )
 
 // define our variables
 var (
-	host = flag.String("host", "", "the whois hostname")
-	port = flag.String("port", "43", "the port to use")
-	domain = flag.String("domain", "", "the domain name to query")
+	host		= flag.String("host", "", "the whois hostname")
+	port		= flag.String("port", "43", "the port to use")
+	domain		= flag.String("domain", "", "the domain name to query")
+	debugOutput	= flag.Bool("debug", false, "enable debug output")
+	version		= flag.Bool("version", false, "the code version")
+	revision	= flag.Bool("revision", false, "revision and build information")
+	versionString string = "devel"
 )
 
 func main() {
@@ -28,6 +33,22 @@ func main() {
 
 	// parse the flags
 	flag.Parse()
+
+	// output revision info
+	if *revision {
+		bi, ok := debug.ReadBuildInfo()
+		if !ok {
+			panic("not ok reading build info!")
+		}
+		fmt.Printf("%s version information:\ncommit %s\n%+v\n", os.Args[0], versionString, bi)
+		return
+	}
+
+	// output version info
+	if *version {
+		fmt.Printf("%s version %s\n", os.Args[0], versionString)
+		return
+	}
 
 	// bail if we don't have what we need
 	if *host == "" || *domain == "" {
