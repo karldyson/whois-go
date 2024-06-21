@@ -9,6 +9,7 @@ import (
 	"io"
 	"time"
 	"runtime/debug"
+	"runtime"
 )
 
 // define our variables
@@ -18,7 +19,8 @@ var (
 	debugOutput	= flag.Bool("debug", false, "enable debug output")
 	version		= flag.Bool("version", false, "the code version")
 	revision	= flag.Bool("revision", false, "revision and build information")
-	versionString string = "devel"
+	timeout 	= flag.Float64("timeout", 2, "the connection timeout value in seconds")
+	versionString	string = "devel"
 	name string
 )
 
@@ -65,12 +67,12 @@ func main() {
 	}
 
 	// connect to the server
-	m, _ := time.ParseDuration("2s")
-	dialer := net.Dialer{Timeout: m}
-	conn, err := dialer.Dial("tcp", net.JoinHostPort(*host, *port))
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(*host, *port), time.Duration(*timeout * float64(time.Second)))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Connection to %s:%s failed: %s\n", *host, *port, err)
+		fmt.Fprintf(os.Stderr, "Connection to %s failed: %s\n", net.JoinHostPort(*host, *port), err)
 		return
+	} else {
+		_debug(fmt.Sprintf("Connection established to %s", net.JoinHostPort(*host, *port)))
 	}
 
 	// write to the server
@@ -78,6 +80,8 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Send to %s:%s failed: %s\n", *host, *port, err)
 		return
+	} else {
+		_debug(fmt.Sprintf("data string [%s] sent to server", name))
 	}
 	
 	// receive the response from the server
@@ -98,4 +102,18 @@ func main() {
 	
 	// close the connection
 	conn.Close()
+}
+
+func _debug(debugString string) {
+	if !*debugOutput {
+		return
+	}
+	pc, _, no, ok := runtime.Caller(1)
+	details := runtime.FuncForPC(pc)
+	if ok && details != nil {
+		fmt.Printf("DEBUG :: %s#%d :: %s\n", details.Name(), no, debugString)
+	} else {
+		fmt.Fprintf(os.Stderr, "Error: fatal error determining debug calling function")
+		os.Exit(1)
+	}
 }
