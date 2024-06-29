@@ -8,6 +8,39 @@ and the domain to query being the --domain option.
 
 An exercise in connecting to a simple TCP server and reading the response.
 
+## Usage
+
+In it's basic form, the code will default to the IANA whois server and will query for the name passed
+as a CLI parameter:
+
+- whois some.domain.name
+- whois AS12345
+- whois 1.2.3.4
+
+The following options modify this behaviour:
+
+* --host some.host.or.ip.address
+  specifies a host to connect to instead of the default IANA server
+
+* --port 43
+  specify a port to connect to instead of the default 43
+
+* --timeout 2
+  specify a network connection timeout instead of the default 2 seconds
+
+* --version
+  output the code version
+
+* --revision
+  output more verbose code revision information
+
+* --debug
+  output debug information
+
+## ToDo
+
+* Add referral following
+
 ## Bug Reporting
 
 Please use the issues feature, or, of course, offer to contribute.
